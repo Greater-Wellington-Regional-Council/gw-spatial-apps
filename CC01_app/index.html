@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Climate Change maps app for GWRC, JRG 25-JUN-2018. Working version. v05. 22-JUL-2018-->
+	<!-- Updates : - added 3 extra annual layer groups as in DEV webservice, JRG 30_JUL-2018-->
+	<!--           - add whaitua overlay to layer control, JRG, 07-AUG-2018 -->
+	<title>GWRC Climate Change Models</title>
+	<meta charset="utf-8">
+	<!-- Fix for IE used in intranet compatibility mode -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<!-- Viewport for BootStrap -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css">
+	<link rel="stylesheet" href="src/leaflet.groupedlayercontrol.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+	<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+	<script src="https://unpkg.com/esri-leaflet@2.0.7"></script>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="src/leaflet.groupedlayercontrol.js"></script>
+	<script src='src/easy-button.js'></script>
+	<link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.2.3/dist/esri-leaflet-geocoder.css">
+	<script src="https://unpkg.com/esri-leaflet-geocoder@2.2.3"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- Latest compiled bootstrap JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+	<!-- Leaflet Draw -->
+	<script src="src/Leaflet.draw.js"></script>
+    <script src="src/Leaflet.Draw.Event.js"></script>
+    <link rel="stylesheet" href="src/leaflet.draw.css"/>
+
+    <script src="src/Toolbar.js"></script>
+    <script src="src/Tooltip.js"></script>
+
+    <script src="src/ext/GeometryUtil.js"></script>
+    <script src="src/ext/LatLngUtil.js"></script>
+    <script src="src/ext/LineUtil.Intersect.js"></script>
+    <script src="src/ext/Polygon.Intersect.js"></script>
+    <script src="src/ext/Polyline.Intersect.js"></script>
+    <script src="src/ext/TouchEvents.js"></script>
+
+    <script src="src/draw/DrawToolbar.js"></script>
+    <script src="src/draw/handler/Draw.Feature.js"></script>
+    <script src="src/draw/handler/Draw.SimpleShape.js"></script>
+    <script src="src/draw/handler/Draw.Polyline.js"></script>
+    <script src="src/draw/handler/Draw.Marker.js"></script>
+    <script src="src/draw/handler/Draw.Circle.js"></script>
+    <script src="src/draw/handler/Draw.CircleMarker.js"></script>
+    <script src="src/draw/handler/Draw.Polygon.js"></script>
+    <script src="src/draw/handler/Draw.Rectangle.js"></script>
+
+
+    <script src="src/edit/EditToolbar.js"></script>
+    <script src="src/edit/handler/EditToolbar.Edit.js"></script>
+    <script src="src/edit/handler/EditToolbar.Delete.js"></script>
+
+    <script src="src/Control.Draw.js"></script>
+
+    <script src="src/edit/handler/Edit.Poly.js"></script>
+    <script src="src/edit/handler/Edit.SimpleShape.js"></script>
+    <script src="src/edit/handler/Edit.Rectangle.js"></script>
+    <script src="src/edit/handler/Edit.Marker.js"></script>
+    <script src="src/edit/handler/Edit.CircleMarker.js"></script>
+    <script src="src/edit/handler/Edit.Circle.js"></script>
+	
+	<!-- Config for dropdown menus / layers / popups / descriptive text -->
+	<SCRIPT src="config.js" type="text/javascript"></SCRIPT>
+	
+	<SCRIPT src="src/topfunction.js" type="text/javascript"></SCRIPT>
+	
+	<style>
+		#map {
+			float: left;
+			width: 100%;
+			height:800px;
+		}
+		#infosidebar {
+			float: left;
+			width: 100%;
+			height:800px;
+			color: black;
+		}
+		#cc-class-wrapper {
+		    top: 65px;
+			left: 20px;
+			width: 420px;
+		}
+		#cc-period-wrapper {
+			top: 65px;
+			left: 420px;
+			width: 200px;
+		}
+
+		#cc-rcp-wrapper {
+			top: 65px;
+			left: 620px;
+		}
+		
+		#cc-interval-wrapper {
+			top: 65px;
+			left: 720px;
+		}
+
+		#button-wrapper {
+			position: absolute;
+			top: 65px;
+			left: 860px;
+		}
+		
+		#logo{
+			width: auto;
+			max-width:120;
+			max-height:120;
+
+		}  
+		
+		.gw_logo{
+			vertical-align: bottom;
+		}
+		
+		.inline-image img, .inline-image h1{
+			display : inline-block;
+			vertical-align: middle;
+			horizontal-align: left;
+		}
+		
+		.bg-grey {
+			background-color: #f6f6f6;
+		}
+		
+		div.home-content, div.home-news
+		{
+			padding:0 20px 20px 20px;
+			margin-top: 20px;
+			margin-bottom: 20px;
+			border-radius: 8px;
+			background: #f6f6f6;
+		}
+		
+		div.home-content h4
+		{
+			padding-top: 20px;
+		}
+		
+		.navbar {
+			margin-bottom: 0;
+			background-color: #248393;
+			z-index: 9999;
+			border: 0;
+			font-size: 16px !important;
+			line-height: 1.42857143 !important;
+			letter-spacing: 4px;
+			border-radius: 0;
+		}
+
+		.navbar li a, .navbar .navbar-brand .navbar-brand img {
+			color: #000 !important;
+			vertical-align:0px;
+		}
+
+		.navbar-nav li a:hover, .navbar-nav li.active a {
+			color: #0f894a !important;
+			background-color: #fff !important;
+		}
+
+		.navbar-default .navbar-toggle {
+			border-color: transparent;
+			color: #fff !important;
+		}
+		
+		/* round the edges on maps */
+		.leaflet-container {
+			border-radius: 10px;
+			-moz-border-radius:10px;
+			-khtml-border-radius:10px;
+			-webkit-border-radius:10px;
+		}
+		
+		figure {
+		  border-top: none;
+		  padding-top: 0;
+		}
+		
+		figcaption {
+		  padding: 0.5em;
+		  font-style: bold;
+		  font-size: larger;
+		}
+		
+		/* Modal intro form styles */
+		.modal {
+		  text-align: center;
+		}
+
+		@media screen and (min-width: 768px) { 
+		  .modal:before {
+			display: inline-block;
+			vertical-align: middle;
+			content: " ";
+			height: 100%;
+		  }
+		}
+
+		.modal-dialog {
+		  display: inline-block;
+		  text-align: left;
+		  vertical-align: middle;
+		}
+		
+		.modal-body {
+			background-image: url('http://giswebdev.gw.govt.nz/ClimateChange01/img/NIWA_GWRC_ClimateChangeReport_Trans20pc.png');
+			background-repeat: no-repeat;
+			background-size: cover;
+			height: 274px;
+		}
+		
+		#myBtn {
+			display: none;
+			position: fixed;
+			bottom: 20px;
+			right: 30px;
+			z-index: 99;
+			font-size: 14px;
+			border: none;
+			outline: none;
+			background-color: green;
+			color: white;
+			cursor: pointer;
+			padding: 15px;
+			border-radius: 4px;
+		}
+
+		#myBtn:hover {
+			background-color: #555;
+		}
+
+	</style>
+</head>
+<body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
+
+	<nav class="navbar navbar-default">
+	  <div class="container-fluid">
+		<div class="navbar-header">
+		  <!-- https://stackoverflow.com/questions/19733447/bootstrap-navbar-with-left-center-or-right-aligned-items -->
+		  <a class="mx-auto" href="#">
+			<img src="img/Banner_CC.png" alt="GWRC CC model logo" style="width:430px;height:60px;border:0;border-radius:5px;">
+		  </a>
+		  <!-- <img class="gw_logo" src="img/GW Logo Swirl with Background4pc.png" alt="GWRC logo"> -->
+		  <!-- <a class="navbar-brand" href="#">WebSiteName</a> -->
+		</div>
+		<ul class="nav navbar-nav navbar-right">
+			<!-- <li class="active"><a href="#">Home</a></li> -->
+			<li><a href="#how-to-use">Help</a></li>
+			<li><a href="#background-to-topic">Background</a></li>
+		</ul>
+	  </div>
+	</nav>
+
+<!-- #248393 or #00b3b3-->
+<div id="main-map" class="container-fluid" style="background-color:#248393;">
+
+	<br>
+	<!-- Strings in form-control below must match key values in config file -->
+    <form class="form-inline">
+		<div class="form-group">
+		  <label for="sel1">  Climate indicator :</label>
+		  <select class="form-control" id="cc-class-wrapper">
+			<option>Windy days magnitude - (99th percentile)</option>
+			<option>Windy days over 10m/s average </option>
+			<option>Dry Days <1mm per day </option>
+			<option>Wet days over 1mm per day</option>
+			<option>Wet days over 25mm per day</option>
+			<option>Total rainfall </option>
+			<option>99th percentile of daily rainfall</option>
+			<option>Growing degree days base 5C </option>
+			<option>Growing degree days base 10C </option>
+			<option selected="selected">Hot days >25C </option>
+			<option>Cold nights - decrease in days per year</option>
+			<option>Potential evapotranspiration deficit </option>
+			<option>Potential evapotranspiration deficit (PED) days over 300mm </option>
+			<option>Soil moisture deficit days</option>
+			<option>Mean temperature </option>
+			<option>Mean min temp </option>
+			<option>Mean max temp </option>
+			<option>Diurnal annual temp range </option>
+			<option>Snow days</option>
+			<option>Solar radiation </option>
+			<option>Relative humidity </option>
+		  </select>
+		</div>
+		<div class="form-group">
+		  <label for="sel2">  Period :</label>
+		  <select class="form-control" id="cc-period-wrapper">
+			<option value="0">2031 to 2050</option>
+			<option value="4" selected="selected">2081 to 2100</option>
+		  </select>
+		</div>
+		<div class="form-group">
+		  <label for="sel2">  RCP :</label>
+		  <!-- <select class="form-control" name="ccrcps" id="ccrcps"> -->
+		  <select class="form-control" name="ccrcps" id="cc-rcp-wrapper">
+				<option value="0">RCP 2.6</option>
+				<option value="1">RCP 4.5</option>
+				<option value="2">RCP 6.0</option>
+				<option value="3" selected="selected">RCP 8.5</option>
+		  </select>
+		</div>
+		<div class="form-group">
+		  <label for="sel2">  Interval :</label>
+		  <select class="form-control" name="ccinterval" id="cc-interval-wrapper" disabled>
+				<option value="0" selected="selected">Annual</option>
+				<option value="1">Spring</option>
+				<option value="2">Summer</option>
+				<option value="3">Autumn</option>
+				<option value="4">Winter</option>
+		  </select>
+		</div>
+		<div class="form-group">
+			<button type="button" class="btn btn-primary disabled" id="refreshbutton">Update Map</button>
+		</div>
+	</form>
+	<br>
+
+  <div class="row">
+    <div class="col-sm-9" style="background-color:#248393;">
+		<div id="map">  </div>
+	</div>
+    <div class="col-sm-3" style="background-color:#248393;">
+		<h2 align="center">Climate variable details </h2>
+		<br>
+		  <!-- <p>The panel-group class clears the bottom-margin. Try to remove the class and see what happens.</p> -->
+		  <div class="panel-group">
+			<div class="panel panel-default">
+			  <div class="panel-heading"  id="ccVarBasicTitle"><b>Change in Hot Days >25C</b></div>
+			  <div class="panel-body" id="ccVarBasicInfo">Hot Days are considered as the number of days per year equal to or exceeding 25°C.<br> <br><a href="#climate-var-details">More details</a></div>
+			</div>
+		  </div>
+		<p style="text-align:center;" id="logo" ><b>Legend</b></p> 
+		<br>
+		<!-- <div id="infosidebar"> </div> -->
+	</div>
+  </div>
+  
+</div>
+
+<div id="climate-var-details" class="container-fluid" style="background-color:#2da4b9;">
+	<h3>Climate variable details</h3>
+    <div class="col-md-6">	
+        <div class="home-content">
+			<h4 id="ccVarDetailTitle">Change in Hot Days >25C</h4>
+<div id="ccVarDetailInfo">High temperature extremes (i.e. ‘hot days’) are considered as the number of days per year where the max temperature is equal to or exceeds 25°C.<br>At 2040, eastern areas are projected to experience increases of about 10-20 days per year for RCP4.5 and 10-30 days for RCP8.5. For western areas, an increase of up to 10 hot days per year is projected.<br>At 2090 under RCP4.5, hot days are expected to increase by 30-40 days per year in the east. Western areas are projected to experience mostly 5-10 more hot days per year. Under RCP8.5 at 2090, large increases in the number of hot days across most of the region are projected. For central Wairarapa, the number of hot days is projected to increase by around 70 days per year.  Western areas are projected to experience an increase of around 30-40 days in lowlands, decreasing to 5 days per year for the highest elevations. <br> <br><A HREF="http://www.gw.govt.nz/assets/Climate-change/Climate-Change-and-Variability-report-Wlgtn-Regn-High-Res-with-Appendix.pdf#page=71" target="_blank"> See details in report.</a><br></div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="home-content">
+			<h4>Other sources of information</h4>
+			<ul>
+				<li><a href="http://www.gw.govt.nz/climate-change/" target="_blank">GWRC Climate change home page</a></li>
+				<li><a href="http://www.gw.govt.nz/assets/Climate-change-2/FINAL-WellNCC-projectionsimpacts.pdf">Climate Change Projections : Summary report</a></li>
+				<li><a href="http://www.gw.govt.nz/assets/Climate-change/Climate-Change-and-Variability-report-Wlgtn-Regn-High-Res-with-Appendix.pdf">Climate Change Projections : Full report</a></li>
+				<li><a href="http://www.gw.govt.nz/whaitua/" target="_blank">About whaitua</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="how-to-use" class="container-fluid" style="background-color:#248393;">
+	<h3>How to use this page</h3>
+    <div class="col-md-6">	
+        <div class="home-content">
+			<h4>Change map content</h4>
+			<ul>
+				<li>Use the <b>Climate Variable</b> dropdown to choose from 1 of 21 available variables</li>
+				<li>Use other dropdowns to choose the required period, RCP, and season values</li>
+				<li>Note not all variables have seasonal values, some are annual only</li>
+				<li>Click on the <b>Update Map</b> button to refresh the map, legend and associated descriptive text</li>
+			</ul>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="home-content">
+			<h4>Other tools</h4>
+			<ul>
+				<li>Click on the map to view the modelled value at any location <img src="img/popup60pc.jpg" style="width:170px;height:47px";></li>
+				<li>Click on the search tool and enter a name to find any placename in the map area <img src="img/SearchTool.jpg" style="width:43px;height:40px";></li>
+				<li>Click on the layer control tool and choose an option to change the basemap type or overlays <img src="img/LayerControl.jpg" style="width:43px;height:40px";></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="background-to-topic" class="container-fluid" style="background-color:#2da4b9;">
+	<h3>Background to this page</h3>
+    <div class="col-md-6">	
+        <div class="home-content">
+			<h4>Background</h4>
+			<p>This webpage displays a set of map layers which illustrate the predicted impacts of climate change in the Wellington Region. Data was supplied with a report commissioned by GWRC from NIWA dated August 2017. </p>
+			<h4>RCP</h4>
+			<p>It shows predicted changes at 2040 and 2090 for a range of four RCPs (2.6, 4.5, 6.0 and 8.5). Each RCP (Representative Concentration Pathway) is a modelled scenario for how greenhouse gas emissions could evolve over the rest of this century. RCP8.5 is a high emissions scenario, RCP4.5 and 6.0 are intermediate scenarios, and RCP2.6 is a very low emissions scenario.  </p>
+			<h4>Report</h4>
+			<p>The report can be downloaded from the GWRC website as a summary or full report.</p>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="home-content">
+			<h4>Please note</h4>
+			<p>Please note these results are based on modelled data, and as such they are indicative only of likely changes, depending on future greenhouse gases emissions.<br>The nominal resolution is 5 x 5 km. The zoom tool should be used with care, as the data is best interpreted as a broad spatial pattern. For coastal areas with no data, a direct extrapolation of the values immediately adjacent is appropriate. All fields are a result of an average of six IPCC models regarded by NIWA as adequately describing New Zealand climatic variability. </p>
+			<h4>Scenario choice</h4>
+			<p>It’s impossible to know which scenario will be closer to reality by the end of the century, and therefore it is recommended that people’s planning incorporates a range of outcomes. The latest data (as of 2017) shows that even if all the pledges countries made under the 2015 Paris Climate agreement were fulfilled, global emissions could still be on a high-intermediate path not much lower than RCP8.5. Each country is required to update its pledge every five years, enabling the international community to improve emissions reduction commitments over time.</p>
+		</div>
+	</div>
+</div>
+
+<button onclick="topFunction()" id="myBtn" title="Go to top">Return to Top</button>
+
+<!-- Modal form that appears on startup -->
+<div class="modal fade" id="introModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
+        <h4 class="modal-title" id="myModalLabel">Future Impacts of Climate Change in the Wellington Region</h4>
+      </div>
+      <div class="modal-body">
+        <b>Background<br>This webpage displays a set of map layers which illustrate the predicted impacts of climate change in the Wellington Region. Data was supplied with a report commissioned by GWRC from NIWA dated August 2017. <br>RCP<br>
+It shows predicted changes at 2040 and 2090 for a range of four RCPs (2.6, 4.5, 6.0 and 8.5). Each RCP (Representative Concentration Pathway) is a modelled scenario for how greenhouse gas emissions could evolve over the rest of this century. RCP8.5 is a high emissions scenario, RCP4.5 and 6.0 are intermediate scenarios, and RCP2.6 is a very low emissions scenario. <br>Report<br>
+The report can be downloaded from the <a href="http://www.gw.govt.nz/climate-change/" target="_blank">GWRC website</a> as a summary or full report.</b>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/ionicons@4.2.2/dist/ionicons.js"></script>
+
+<script>  
+
+$(document).ready(function () {
+	
+	// Globals for layer specs
+	var ccLayerId = 89;	 // Hot Days, 2090 at RCP8.5
+	var ccClassId = 82;  // Hot Days, base layer offset
+	var ccPeriodId = 4; // 2081-90
+	var ccRCPId = 3; // 8.5
+	var ccIntervalName = 0;
+	var ccIntervalId = 0; // Annual
+	var ccClassName = "Hot days >25C";
+	var ccRCPs = ["RCP 2.6","RCP 4.5","RCP 6.0","RCP 8.5"];
+	var ccPeriods = ["2031 to 2050","","","","2081 to 2100"]; // Indexes are 0 and 4 only
+	var ccIntervals = ["Annual","Spring","Summer","Autumn","Winter"]; 
+  
+	// Could get legend from json at https://mapping1.gw.govt.nz/arcgis/rest/services/ClimateChange/ClimateChangeModels_raster_layers/MapServer/legend/?f=pjson
+	document.getElementById('logo').innerHTML='<figure><figcaption>Map Legend</figcaption><img src="img/HotDays_legend_v01.jpg" style="width:350px;height:310px;border-radius:5px;";></figure>';
+        
+	var map = L.map('map').setView([-41.10, 175.39], 10); 
+  
+	// Basemaps
+	var osm = new L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',{ 
+				attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'});
+				
+	// Need to add API key & protect the key
+	var googleHybrid = new L.tileLayer('http://mt1.google.com/vt/lyrs=y&key=AIzaSyBcG2mQlU_s5UIuwPYUCQ34JyIIIaLK5gs&x={x}&y={y}&z={z}', {
+            attribution: 'Google'
+        });
+		
+	var googleStreet = new L.tileLayer('http://mt1.google.com/vt/lyrs=m&key=AIzaSyBcG2mQlU_s5UIuwPYUCQ34JyIIIaLK5gs&x={x}&y={y}&z={z}', {
+            attribution: 'Google'
+        }).addTo(map);
+	
+	//var topoBaseMap = L.esri.basemapLayer('Topographic').addTo(map);
+	//var streetBaseMap = L.esri.basemapLayer('Streets');
+	//var ngBaseMap = L.esri.basemapLayer('NationalGeographic');
+	//var oceansBaseMap = L.esri.basemapLayer('Oceans');
+	//var grayBaseMap = L.esri.basemapLayer('Gray');
+	//var darkgrayBaseMap = L.esri.basemapLayer('DarkGray');
+	//var imageryBaseMap = L.esri.basemapLayer('Imagery');
+	var reliefBaseMap = L.esri.basemapLayer('ShadedRelief');
+ 
+	// Initial setting at layer 89 = hot days at 2090, RCP8.5, annual
+	var ccLayer = L.esri.dynamicMapLayer({
+		//url: 'https://mapping1.gw.govt.nz/arcgis/rest/services/ClimateChange/ClimateChangeModels_raster_layers/MapServer',
+		url: 'http://giswebdev.gw.govt.nz/arcgis/rest/services/GW/Modelled_Climate_Change/MapServer',
+		opacity: 0.7,
+		layers: [ccLayerId]
+		}).addTo(map);
+	
+	ccLayer.bindPopup(function (error, featureCollection) {
+		if (error || featureCollection.features.length === 0) {
+		  return false;
+		} else {
+		  var pixVal = featureCollection.features[0].properties['Pixel Value'];
+		  var pointNum = parseFloat(pixVal).toFixed(1).toString();
+		  return 'Projected change is ' + pointNum + ' days per year';
+		}
+    });
+
+	// Limit search to current extent
+	var searchControl = L.esri.Geocoding.geosearch({useMapBounds: true}).addTo(map);
+
+	var geocoderesults = L.layerGroup().addTo(map);
+
+	searchControl.on('results', function(data){
+		geocoderesults.clearLayers();
+		geocoderesults.addLayer(L.marker(data.results[0].latlng));
+	});	
+	
+	// Zoom to home extent
+	
+	//<ion-icon src="/img/_ionicons_svg_md-home.svg"></ion-icon>
+	L.easyButton('<ion-icon name="home"></ion-icon>', function(btn, map){
+			map.setView([-41.10, 175.39], 10); 
+		}, 'Home View').addTo( map );	
+	
+	// Handlers for select changes below (i.e. dropdown choice changed)
+	
+	$("#cc-class-wrapper").on('change', function() {
+		ccClassName = $(this).find(":selected").val();
+		//alert( $(this).find(":selected").val() );
+		//alert("Layer changed : " + ccLayerData[ccClassName].annLayerId.toString()); // defined in config.js;
+		ccClassId = ccLayerData[ccClassName].annLayerId; // Index of initial layer offset for annual data for this CC variable
+		ccIntervalId = ccLayerData[ccClassName].seasonalLayerId;  // Index of initial layer offset for seasonal data for this CC variable; may be 0 if no data
+		document.getElementById("refreshbutton").className = "btn btn-success active";
+		// Disable season dropdown if no seasonal data for this climate variable
+		if (!ccLayerData[ccClassName].seasonalData) {
+			$("#cc-interval-wrapper").val(0);  // Force dropdown to be set at Annual
+			$("#cc-interval-wrapper").attr('disabled', true);  // Disable control
+			ccIntervalName = 0;
+		} else {
+			$("#cc-interval-wrapper").attr('disabled', false); // ?
+		};
+	});
+ 
+	$("#cc-period-wrapper").on('change',function() {
+		// Set global var - numeric value 0 or 4
+		ccPeriodId = $(this).find(":selected").val();
+		document.getElementById("refreshbutton").className = "btn btn-success active";
+	});
+	
+	$("#cc-rcp-wrapper").on('change',function() {
+		// Set global var - numeric value for RCP as 0 to 3
+		ccRCPId = $(this).find(":selected").val();
+		document.getElementById("refreshbutton").className = "btn btn-success active";
+	});
+	
+	$("#cc-interval-wrapper").on('change',function() {
+		// Set global var - numeric value for annual or season as 0 to 4
+		ccIntervalName = $(this).find(":selected").val();
+		ccIntervalId = ccLayerData[ccClassName].seasonalLayerId;  // Index of initial layer offset for seasonal data for this CC variable
+		document.getElementById("refreshbutton").className = "btn btn-success active";
+	});
+	
+	// New logic required - certain cc classes do not have seasonal data layers, so disable season dropdown in these cases
+    
+	$("#refreshbutton").on('click',function() {
+		setCCLayer();
+		document.getElementById("refreshbutton").className = "btn btn-primary disabled";
+	});
+
+	function setCCLayer() {
+	
+		// Get layer ID number from sum of index values from dropdowns (held as globals)
+		ccLayerId = Number(ccClassId) + Number(ccPeriodId) + Number(ccRCPId);
+		
+		if (ccIntervalName > 0) {
+			// Seasonal data layer required - season dropdown value is not "annual" (0)
+			ccLayerId = Number(ccIntervalId) + (Number(4 * ccPeriodId)) + (Number(4 * ccRCPId)) + Number(ccIntervalName);
+			// alert("Required seasonal layer Id : " + ccLayerId.toString());
+		} 
+		
+		if (ccLayer) {
+		  map.removeLayer(ccLayer);
+		}
+
+		if (ccIntervalName == 0) {
+			// Annual data layers
+			ccLayer = L.esri.dynamicMapLayer({
+				//url: 'https://mapping1.gw.govt.nz/arcgis/rest/services/ClimateChange/ClimateChangeModels_raster_layers/MapServer',
+				url: 'http://giswebdev.gw.govt.nz/arcgis/rest/services/GW/Modelled_Climate_Change/MapServer',
+				opacity: 0.7,
+				layers: [ccLayerId]
+			}).addTo(map);
+		} else {
+			// Seasonal data layers
+			ccLayer = L.esri.dynamicMapLayer({
+				url: 'http://giswebdev.gw.govt.nz/arcgis/rest/services/GW/Modelled_Climate_Change_Seasonal/MapServer',
+				opacity: 0.7,
+				layers: [ccLayerId]
+			}).addTo(map);
+		}
+
+		//
+		// Get legend 
+		// From image at : ccLayerData[ccClassName].popupText.layerLegend;
+		// document.getElementById('logo').innerHTML='<figure><img src="img/DryDays_legend.jpg" style="width:250px;height:265px";><figcaption>Map Legend</figcaption></figure>';
+		document.getElementById('logo').innerHTML='<figure><figcaption>Map Legend</figcaption><img src="' + ccLayerData[ccClassName].layerLegend + '" style="width:350px;height:310px;border-radius:5px;";></figure>';
+		
+		// Update text in sidepanel
+		document.getElementById('ccVarBasicTitle').innerHTML="<b>Change in " + ccClassName + "</b>"; 
+		document.getElementById('ccVarBasicInfo').innerHTML=ccLayerIntroText[ccClassName] + "<br> <br><a href='#climate-var-details'>More details</a>"; 
+		
+		document.getElementById('ccVarDetailTitle').innerHTML="<b>Change in " + ccClassName + "</b>"; 
+		document.getElementById('ccVarDetailInfo').innerHTML=ccLayerBodyText[ccClassName]; 
+		
+		ccLayer.bindPopup(function (error, featureCollection) {
+			if(error || featureCollection.features.length === 0) {
+			  return false;
+			} else {
+			  //return 'Value: ';
+			  // .toFixed(1)
+			  pixVal = featureCollection.features[0].properties['Pixel Value'];
+			  pointNum = parseFloat(pixVal).toFixed(2).toString();
+			  //console.log(typeof pixVal);
+			  // return 'Projected change is ' + pointNum + ' more days per year';
+			  return 'Projected change is ' + pointNum + ccLayerData[ccClassName].popupText;
+			}
+		});
+
+	}
+	
+	// Switcher control for basemap layers.
+	var baseMaps = {
+		"Open Street Map" : osm,
+		"Google Satellite" : googleHybrid,
+		"Google Street" : googleStreet,
+		"Relief" : reliefBaseMap
+	};
+	
+	// Draw items and control
+	var drawnItems = L.featureGroup().addTo(map);
+	
+	var overlayFeatureLayers = []; // Initialise array to hold key:value pairs for overlay layer(s) (name & featureLayer object)
+  
+	var whaituaLayerDef = L.esri.dynamicMapLayer({url: 'http://giswebdev.gw.govt.nz/arcgis/rest/services/GW/Whaitua_Boundaries/MapServer'}).addTo(map);
+  
+	var layerName = "Whaitua areas"; 
+	overlayFeatureLayers[layerName] = whaituaLayerDef; // Add layer name & layer definition to array of layers
+	var drawLayerName = "Draw layer"; 
+	overlayFeatureLayers[drawLayerName] = drawnItems; // Add layer name & layer definition to array of layers
+	
+	var layerControl = L.control.layers(baseMaps,overlayFeatureLayers).addTo(map);
+    map.addControl(layerControl);
+	
+	map.addControl(new L.Control.Draw({
+		position: 'bottomright',
+        edit: {
+            featureGroup: drawnItems,
+            poly: {
+                allowIntersection: false
+            }
+        },
+        draw: {
+            polygon: {
+                allowIntersection: false,
+                showArea: true
+            }
+        }
+    }));
+   
+    map.on(L.Draw.Event.CREATED, function (event) {
+        var layer = event.layer;
+        drawnItems.addLayer(layer);
+    });
+	
+	// When the user scrolls down 800px from the top of the document, show the button
+	window.onscroll = function() {scrollFunction()};
+
+	function scrollFunction() {
+    if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+        document.getElementById("myBtn").style.display = "block";
+    } else {
+        document.getElementById("myBtn").style.display = "none";
+    }
+	}
+
+	
+	// Open the initial modal form
+	$("#introModal").modal();
+});
+
+</script>
+
+</body>
+</html> 

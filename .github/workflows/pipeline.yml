@@ -1,0 +1,24 @@
+name: Deploy app to Azure Static Web App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Deploy widgets
+      - name: Deploy climate change app
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.SWA_WIDGETS_TOKEN }}
+          action: upload
+          app_location: CC01_app
+          output_location: ""
