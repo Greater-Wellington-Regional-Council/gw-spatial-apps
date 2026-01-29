@@ -6,9 +6,18 @@ on:
       - main
     ##paths:
       ##- "apps/climate-change/prd/**"
+    # Allow manually trigger
+  workflow_dispatch:
+    inputs:
+      job_to_run:
+        description: 'Which job to run'
+        required: true
+        type: choice
+        options:
+          - deploy-prd
 
 jobs:
-  deploy:
+  deploy-prd:
     runs-on: ubuntu-latest
 
     steps:

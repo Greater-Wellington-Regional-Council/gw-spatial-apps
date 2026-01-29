@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - "**"   # any branch
-    paths:
-      - "apps/climate-change/dev/**"
-
+    ##paths:
+    ##  - "apps/climate-change/dev/**"
+    
 jobs:
   deploy:
     runs-on: ubuntu-latest

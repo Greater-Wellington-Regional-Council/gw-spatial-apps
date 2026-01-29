@@ -4,11 +4,21 @@ on:
   push:
     branches:
       - deploy-test
-    paths:
-      - "apps/climate-change/tst/**"
+    ##paths:
+    ##  - "apps/climate-change/tst/**"
+
+  # Allow manually trigger
+  workflow_dispatch:
+    inputs:
+      job_to_run:
+        description: 'Which job to run'
+        required: true
+        type: choice
+        options:
+          - deploy-test
 
 jobs:
-  deploy:
+  deploy-test:
     runs-on: ubuntu-latest
 
     steps:
