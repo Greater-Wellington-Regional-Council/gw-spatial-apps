@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "apps/climate-change/prod/**"
+      - "apps/climate-change/prd/**"
 
 jobs:
   deploy:
