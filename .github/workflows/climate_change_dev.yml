@@ -6,7 +6,7 @@ on:
       - "**"   # any branch
     ##paths:
     ##  - "apps/climate-change/dev/**"
-    
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,5 +20,5 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.SWA_CLIMATE_DEV_TOKEN }}
           action: upload
-          app_location: apps/climate-change/dev/
+          app_location: apps/climate_change/dev/
           output_location: ""
