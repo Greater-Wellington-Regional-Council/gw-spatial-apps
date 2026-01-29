@@ -1,0 +1,24 @@
+name: Climate App - TEST Deploy
+
+on:
+  push:
+    branches:
+      - deploy-test
+    paths:
+      - "apps/climate-change/tst/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Azure Static Web App (TEST)
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.SWA_CLIMATE_TEST_TOKEN }}
+          action: upload
+          app_location: apps/climate-change/tst/
+          output_location: ""
