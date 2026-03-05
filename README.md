@@ -102,7 +102,7 @@ Follow this workflow to make changes to any application:
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/your-org/gw-spatial-apps.git
+git clone https://github.com/Greater-Wellington-Regional-Council/gw-spatial-apps.git
 cd gw-spatial-apps
 ```
 
